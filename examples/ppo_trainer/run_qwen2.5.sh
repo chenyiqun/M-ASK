@@ -1,17 +1,12 @@
 set -x
 
-hotpot_qa_train_path=/mnt/tidal-alsh01/usr/chenyiqun/datasets/data/verl_format_data/hotpotqa/train_verl.parquet
-hotpot_qa_test_path=/mnt/tidal-alsh01/usr/chenyiqun/datasets/data/verl_format_data/hotpotqa/test_verl.parquet
+hotpot_qa_train_path=hotpot_qa_train_path
+hotpot_qa_test_path=hotpot_qa_test_path
 train_files="['$hotpot_qa_train_path']"
 test_files="['$hotpot_qa_test_path']"
 
-# nq_search_train_path=/mnt/tidal-alsh01/usr/chenyiqun/datasets/data/verl_format_data/nq_search/train_verl.parquet
-# nq_search_test_path=/mnt/tidal-alsh01/usr/chenyiqun/datasets/data/verl_format_data/nq_search/test_verl.parquet
-# train_files="['$nq_search_train_path']"
-# test_files="['$nq_search_test_path']"
-
 # WandB 登录
-export WANDB_API_KEY="5235f681e1a2a0ef6fe3a1f4686280daad738532"
+export WANDB_API_KEY="xxxxxxx"
 # vllm
 export VLLM_USE_V1=1
 
@@ -28,7 +23,7 @@ python3 -m verl.trainer.main_ppo \
     data.max_response_length=1024 \
     data.filter_overlong_prompts=True \
     data.truncation='error' \
-    actor_rollout_ref.model.path=/mnt/tidal-alsh01/usr/chenyiqun/base_models/Qwen/Qwen2.5-7B-Instruct \
+    actor_rollout_ref.model.path=model_path \
     actor_rollout_ref.model.enable_gradient_checkpointing=False \
     actor_rollout_ref.actor.optim.lr=2e-7 \
     actor_rollout_ref.model.use_remove_padding=True \
@@ -44,7 +39,7 @@ python3 -m verl.trainer.main_ppo \
     actor_rollout_ref.rollout.gpu_memory_utilization=0.6 \
     critic.optim.lr=1e-5 \
     critic.model.use_remove_padding=True \
-    critic.model.path=/mnt/tidal-alsh01/usr/chenyiqun/base_models/Qwen/Qwen2.5-7B-Instruct \
+    critic.model.path=model_path \
     critic.model.enable_gradient_checkpointing=False \
     critic.ppo_micro_batch_size_per_gpu=4 \
     critic.model.fsdp_config.param_offload=False \
@@ -53,7 +48,7 @@ python3 -m verl.trainer.main_ppo \
     trainer.critic_warmup=0 \
     trainer.logger='["wandb"]' \
     trainer.project_name='knowledge_search_hotpotqa' \
-    trainer.experiment_name='Init_K0_new_lr2e-7' \
+    trainer.experiment_name='M-ASK' \
     trainer.n_gpus_per_node=8 \
     trainer.nnodes=1 \
     trainer.save_freq=100 \
@@ -63,9 +58,3 @@ python3 -m verl.trainer.main_ppo \
     actor_rollout_ref.rollout.mode=async \
     actor_rollout_ref.actor.ppo_epochs=1 \
     trainer.val_before_train=True \
-
-# actor_rollout_ref.rollout.temperature=0.7 \
-# actor_rollout_ref.rollout.top_p=0.8 \
-
-# actor_rollout_ref.actor.use_kl_loss=True \
-# actor_rollout_ref.ref.log_prob_micro_batch_size_per_gpu=2 \
